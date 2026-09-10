@@ -1,0 +1,28 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Data and Models
+models/*.pt
+models/*.onnx
+data/*.mp4
+data/*.avi
+data/*.jpg
+data/*.png
+
+# Database and Generated Reports
+*.db
+*.sqlite3
+reports/*.pdf
+
+# IDE and OS settings
+.DS_Store
+.vscode/
+.idea/
