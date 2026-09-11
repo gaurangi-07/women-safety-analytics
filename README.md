@@ -19,6 +19,12 @@ An AI-powered terminal-based women safety monitoring system designed for real-ti
 
 ---
 
+> [!IMPORTANT]
+> **Disclaimer on Gender Classification**:
+> Gender classification performed from CCTV video streams or surveillance imagery relies on automated visual feature estimations (such as spatial aspect ratios, body proportions, and color profiles). This feature provides probabilistic statistical estimations for situational monitoring and risk assessment. It is **not 100% accurate** and **does not claim to determine any individual's actual gender identity with absolute certainty**.
+
+---
+
 ## 📁 Directory Structure
 
 ```text
