@@ -1,13 +1,5 @@
-# Women Safety Analytics - Dependencies
-# OpenCV for video processing and camera input
-opencv-python>=4.8.0
-
-# Ultralytics YOLO for object/person detection
-ultralytics>=8.0.0
-
-# Data manipulation and visualization
-pandas>=2.0.0
-matplotlib>=3.7.0
-
-# Report generation
-reportlab>=4.0.0
+opencv-python
+ultralytics
+numpy
+mediapipe
+rich
