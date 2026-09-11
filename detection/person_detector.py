@@ -2,19 +2,21 @@ import os
 import cv2
 from ultralytics import YOLO
 from .gender_classifier import GenderClassifier
+from analytics.threat_detection import ThreatDetector
 
 class PersonDetector:
     """
-    A class to handle person detection using pretrained YOLO model
-    and integrate gender classification for detected persons.
+    A class to handle person detection using pretrained YOLO model,
+    integrate gender classification, and evaluate threat detection rules.
     """
     def __init__(self, model_name="yolov8n.pt"):
-        """Initialize the YOLO model and GenderClassifier."""
+        """Initialize the YOLO model, GenderClassifier, and ThreatDetector."""
         # COCO dataset class index 0 corresponds to 'person'
         self.person_class_id = 0
         print("[+] Loading YOLO model...")
         self.model = YOLO(model_name)
         self.gender_classifier = GenderClassifier()
+        self.threat_detector = ThreatDetector()
 
     def detect_in_image(self, image_path):
         """
@@ -81,6 +83,10 @@ class PersonDetector:
         # Display formatted gender distribution table
         self.gender_classifier.display_distribution_summary(genders)
 
+        # Evaluate threat detection rules
+        self.threat_detector.check_lone_woman_at_night(person_boxes, camera_name="IMAGE-ANALYSIS")
+        self.threat_detector.check_woman_surrounded_by_men(person_boxes, camera_name="IMAGE-ANALYSIS")
+
         print("[+] Displaying image window. Press any key on the image window to close.")
         cv2.imshow("Women Safety Analytics - Person & Gender Detection", image)
         cv2.waitKey(0)
@@ -146,6 +152,10 @@ class PersonDetector:
 
             count = len(frame_person_boxes)
             all_frames_data.append(frame_person_boxes)
+
+            # Evaluate threat detection rules
+            self.threat_detector.check_lone_woman_at_night(frame_person_boxes, camera_name="VIDEO-STREAM")
+            self.threat_detector.check_woman_surrounded_by_men(frame_person_boxes, camera_name="VIDEO-STREAM")
 
             # Display detection count overlay on the frame
             count_text = f"People Count: {count}"
