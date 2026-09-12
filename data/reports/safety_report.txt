@@ -1,0 +1,43 @@
+=================================================
+          WOMEN SAFETY ANALYTICS REPORT          
+=================================================
+Generated On: 2026-09-12 19:22:09
+
+-------------------------------------------------
+1. ALERT SUMMARY
+-------------------------------------------------
+Total Safety Alerts Recorded : 75
+  - High Severity Alerts     : 29
+  - Medium Severity Alerts   : 34
+  - Low Severity Alerts      : 12
+
+-------------------------------------------------
+2. DEMOGRAPHICS & GENDER STATISTICS
+-------------------------------------------------
+Total People Analyzed        : 124
+Male Count                   : 78 (62.90%)
+Female Count                 : 46 (37.10%)
+
+-------------------------------------------------
+3. LOCATION & HOTSPOT ANALYSIS
+-------------------------------------------------
+Top Safety Hotspot           : CAM-03 (41 total alerts)
+Most Common Alert Type       : Lone Woman at Night
+
+-------------------------------------------------
+4. RECENT SAFETY ALERTS
+-------------------------------------------------
+[2026-09-12 00:12:00] ID #75 | Type: SOS Gesture | Severity: LOW | Location: CAM-02
+[2026-09-12 00:12:00] ID #74 | Type: SOS Gesture | Severity: LOW | Location: CAM-02
+[2026-09-12 00:12:00] ID #73 | Type: Lone Woman at Night | Severity: MEDIUM | Location: CAM-02
+[2026-09-12 00:12:00] ID #72 | Type: Lone Woman at Night | Severity: MEDIUM | Location: CAM-02
+[2026-09-12 00:12:00] ID #71 | Type: Lone Woman at Night | Severity: MEDIUM | Location: CAM-02
+[2026-09-12 00:12:00] ID #70 | Type: Lone Woman at Night | Severity: MEDIUM | Location: CAM-02
+[2026-09-12 00:12:00] ID #69 | Type: Woman Surrounded by Men | Severity: HIGH | Location: CAM-02
+[2026-09-12 00:12:00] ID #68 | Type: Woman Surrounded by Men | Severity: HIGH | Location: CAM-02
+[2026-09-12 00:12:00] ID #67 | Type: SOS Gesture | Severity: LOW | Location: CAM-01
+[2026-09-12 00:12:00] ID #66 | Type: SOS Gesture | Severity: LOW | Location: CAM-01
+
+=================================================
+                END OF REPORT                    
+=================================================

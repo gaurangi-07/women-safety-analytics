@@ -14,8 +14,13 @@ class PersonDetector:
         """Initialize YOLO, GenderClassifier, ThreatDetector, and SOSGestureDetector."""
         # COCO dataset class index 0 corresponds to 'person'
         self.person_class_id = 0
-        print("[+] Loading YOLO model...")
-        self.model = YOLO(model_name)
+        print("[+] Loading YOLO model... (first run may download weights, please wait)")
+        try:
+            self.model = YOLO(model_name)
+        except Exception as e:
+            print(f"[X] Model loading failed: {e}")
+            print("[!] Ensure 'ultralytics' is installed: pip install ultralytics")
+            raise
         self.gender_classifier = GenderClassifier()
         self.threat_detector = ThreatDetector()
         self.gesture_detector = SOSGestureDetector()
@@ -87,7 +92,7 @@ class PersonDetector:
 
         # Save scene stats to database
         try:
-            from database import save_gender_stat
+            from database.database import save_gender_stat
             save_gender_stat(
                 source_name=os.path.basename(image_path),
                 male_count=genders.count("Male"),
@@ -193,7 +198,7 @@ class PersonDetector:
 
         # Save video scene stats to database
         try:
-            from database import save_gender_stat
+            from database.database import save_gender_stat
             save_gender_stat(
                 source_name=os.path.basename(video_path),
                 male_count=all_detected_genders.count("Male"),

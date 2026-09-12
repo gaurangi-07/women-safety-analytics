@@ -92,7 +92,7 @@ class AlertManager:
 
         # Save to local SQLite database
         try:
-            from database import save_alert
+            from database.database import save_alert
             save_alert(
                 alert_type=alert.alert_type,
                 severity=alert.severity,

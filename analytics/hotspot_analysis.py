@@ -1,4 +1,4 @@
-from database import get_all_alerts
+from database.database import get_all_alerts
 
 class HotspotAnalyzer:
     """
