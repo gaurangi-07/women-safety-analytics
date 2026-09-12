@@ -15,6 +15,96 @@ def display_menu():
     print("8. Exit")
     print("===============================================")
 
+def display_safety_alerts():
+    """
+    Fetches and displays recorded safety alerts from SQLite database
+    in a clean, formatted table. Allows selecting an alert ID to inspect details.
+    """
+    from database import get_all_alerts
+    alerts = get_all_alerts()
+
+    if not alerts:
+        print("\n[!] No safety alerts currently recorded in database.")
+        return
+
+    print("\n===============================================")
+    print("              SAFETY ALERTS")
+    print("===============================================")
+    print(f"{'ID':<4} {'TYPE':<26} {'SEVERITY':<10} {'TIME':<8}")
+    print("------------------------------------------------")
+
+    alert_dict = {}
+    for alert in alerts:
+        aid = alert['id']
+        alert_dict[aid] = alert
+        
+        atype = alert['alert_type']
+        if len(atype) > 24:
+            atype = atype[:21] + "..."
+            
+        severity = alert['severity']
+        timestamp = alert['timestamp']
+        time_str = timestamp.split(" ")[-1][:5] if " " in timestamp else timestamp[:5]
+
+        print(f"{aid:<4} {atype:<26} {severity:<10} {time_str:<8}")
+
+    print("===============================================")
+
+    choice = input("\nEnter alert ID to view details (or press Enter to return): ").strip()
+    if choice and choice.isdigit():
+        target_id = int(choice)
+        if target_id in alert_dict:
+            a = alert_dict[target_id]
+            print("\n========================================")
+            print(f"        ALERT DETAILS (ID #{a['id']})")
+            print("========================================")
+            print(f"Alert Type : {a['alert_type']}")
+            print(f"Severity   : {a['severity']}")
+            print(f"Timestamp  : {a['timestamp']}")
+            print(f"Location   : {a['location']}")
+            print(f"People     : {a['female_count']} Female(s), {a['male_count']} Male(s)\n")
+            print("Description:")
+            print(f"{a['description']}")
+            print("========================================\n")
+        else:
+            print(f"\n[X] Error: Alert ID #{target_id} not found in database.")
+
+def display_gender_statistics():
+    """
+    Displays overall aggregate and latest scene gender statistics stored in SQLite database.
+    """
+    from database import get_aggregate_gender_stats, get_latest_gender_stat
+    
+    stats = get_aggregate_gender_stats()
+    latest = get_latest_gender_stat()
+
+    print("\n===============================================")
+    print("             GENDER STATISTICS")
+    print("===============================================")
+    print(f"Total People Analyzed : {stats['total']}")
+    print(f"Male                  : {stats['male']}")
+    print(f"Female                : {stats['female']}\n")
+    print(f"Male Percentage       : {stats['male_pct']:.2f}%")
+    print(f"Female Percentage     : {stats['female_pct']:.2f}%")
+
+    if latest:
+        m_count = latest['male_count']
+        f_count = latest['female_count']
+        t_count = latest['total_count']
+        m_pct = (m_count / t_count * 100.0) if t_count > 0 else 0.0
+        f_pct = (f_count / t_count * 100.0) if t_count > 0 else 0.0
+
+        print("\n-----------------------------------------------")
+        print("          LATEST SCENE STATISTICS")
+        print("-----------------------------------------------")
+        print(f"Source                : {latest['source_name']}")
+        print(f"Time                  : {latest['timestamp']}")
+        print(f"Total People          : {t_count}")
+        print(f"Male                  : {m_count} ({m_pct:.2f}%)")
+        print(f"Female                : {f_count} ({f_pct:.2f}%)")
+
+    print("===============================================\n")
+
 def main():
     while True:
         display_menu()
@@ -47,33 +137,12 @@ def main():
         elif choice == '3':
             print("\n[!] Live Camera - Feature coming soon.")
         elif choice == '4':
-            from alerts import generate_alert
-            print("\n[+] Displaying sample safety alert system demonstration...")
-            generate_alert(
-                alert_type="Lone Woman at Night",
-                severity="MEDIUM",
-                camera_name="CAM-01",
-                male_count=0,
-                female_count=1,
-                description="A potential safety risk pattern was detected."
-            )
+            display_safety_alerts()
         elif choice == '5':
-            file_path = input("\nEnter image or video path for Gender Statistics: ").strip()
-            if not file_path:
-                print("\n[X] Error: File path cannot be empty.")
-            else:
-                try:
-                    from detection.person_detector import PersonDetector
-                    detector = PersonDetector()
-                    if file_path.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):
-                        detector.detect_in_video(file_path)
-                    else:
-                        detector.detect_in_image(file_path)
-                except ImportError as e:
-                    print(f"\n[X] Missing required packages: {e}")
-                    print("[!] Please run: pip install -r requirements.txt")
+            display_gender_statistics()
         elif choice == '6':
-            print("\n[!] Hotspot Analysis - Feature coming soon.")
+            from analytics.hotspot_analysis import display_hotspots
+            display_hotspots()
         elif choice == '7':
             print("\n[!] Generate Report - Feature coming soon.")
         elif choice == '8':

@@ -89,6 +89,22 @@ class AlertManager:
 
         alert.display()
         self.alert_history.append(alert)
+
+        # Save to local SQLite database
+        try:
+            from database import save_alert
+            save_alert(
+                alert_type=alert.alert_type,
+                severity=alert.severity,
+                timestamp=alert.timestamp,
+                location=alert.camera_name,
+                male_count=alert.male_count,
+                female_count=alert.female_count,
+                description=alert.description
+            )
+        except Exception as e:
+            print(f"[!] Database Warning: Unable to log alert to SQLite: {e}")
+
         return alert
 
     def view_alerts(self):

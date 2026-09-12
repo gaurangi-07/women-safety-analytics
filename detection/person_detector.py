@@ -2,21 +2,23 @@ import os
 import cv2
 from ultralytics import YOLO
 from .gender_classifier import GenderClassifier
+from .gesture_detector import SOSGestureDetector
 from analytics.threat_detection import ThreatDetector
 
 class PersonDetector:
     """
     A class to handle person detection using pretrained YOLO model,
-    integrate gender classification, and evaluate threat detection rules.
+    integrate gender classification, threat detection rules, and SOS gesture detection.
     """
     def __init__(self, model_name="yolov8n.pt"):
-        """Initialize the YOLO model, GenderClassifier, and ThreatDetector."""
+        """Initialize YOLO, GenderClassifier, ThreatDetector, and SOSGestureDetector."""
         # COCO dataset class index 0 corresponds to 'person'
         self.person_class_id = 0
         print("[+] Loading YOLO model...")
         self.model = YOLO(model_name)
         self.gender_classifier = GenderClassifier()
         self.threat_detector = ThreatDetector()
+        self.gesture_detector = SOSGestureDetector()
 
     def detect_in_image(self, image_path):
         """
@@ -83,9 +85,21 @@ class PersonDetector:
         # Display formatted gender distribution table
         self.gender_classifier.display_distribution_summary(genders)
 
-        # Evaluate threat detection rules
+        # Save scene stats to database
+        try:
+            from database import save_gender_stat
+            save_gender_stat(
+                source_name=os.path.basename(image_path),
+                male_count=genders.count("Male"),
+                female_count=genders.count("Female")
+            )
+        except Exception as e:
+            print(f"[!] Database Warning: Unable to save gender stat: {e}")
+
+        # Evaluate threat detection rules & SOS gesture
         self.threat_detector.check_lone_woman_at_night(person_boxes, camera_name="IMAGE-ANALYSIS")
         self.threat_detector.check_woman_surrounded_by_men(person_boxes, camera_name="IMAGE-ANALYSIS")
+        self.gesture_detector.process_frame(image, camera_name="IMAGE-ANALYSIS")
 
         print("[+] Displaying image window. Press any key on the image window to close.")
         cv2.imshow("Women Safety Analytics - Person & Gender Detection", image)
@@ -153,9 +167,10 @@ class PersonDetector:
             count = len(frame_person_boxes)
             all_frames_data.append(frame_person_boxes)
 
-            # Evaluate threat detection rules
+            # Evaluate threat detection rules & SOS gesture
             self.threat_detector.check_lone_woman_at_night(frame_person_boxes, camera_name="VIDEO-STREAM")
             self.threat_detector.check_woman_surrounded_by_men(frame_person_boxes, camera_name="VIDEO-STREAM")
+            self.gesture_detector.process_frame(frame, camera_name="VIDEO-STREAM")
 
             # Display detection count overlay on the frame
             count_text = f"People Count: {count}"
@@ -175,5 +190,16 @@ class PersonDetector:
 
         # Print overall video gender distribution summary
         self.gender_classifier.display_distribution_summary(all_detected_genders)
+
+        # Save video scene stats to database
+        try:
+            from database import save_gender_stat
+            save_gender_stat(
+                source_name=os.path.basename(video_path),
+                male_count=all_detected_genders.count("Male"),
+                female_count=all_detected_genders.count("Female")
+            )
+        except Exception as e:
+            print(f"[!] Database Warning: Unable to save gender stat: {e}")
 
         return all_frames_data
